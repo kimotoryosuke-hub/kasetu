@@ -5,87 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>カセツくん — 仮説検証クエスト</title>
 
-  <!-- Google Fonts: 手書き感あるフォント -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&family=Caveat:wght@400;600;700&family=Hachi+Maru+Pop&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ===== リセット & ベース ===== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    /* ===== リセット & 変数 ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream:     #fffdf5;
+      --cream:      #fffdf5;
       --cream-dark: #f5f0e0;
-      --ink:       #2d2a20;
-      --ink-light: #5a5548;
-      --red:       #d45c4a;
-      --yellow:    #e8c44a;
-      --blue:      #4a7fc1;
-      --green:     #5a9e6f;
-      --purple:    #8b6bb1;
-      --orange:    #e07840;
-      --border:    #2d2a20;
-      --shadow:    4px 4px 0px #2d2a20;
-      --shadow-sm: 2px 2px 0px #2d2a20;
+      --cream-mid:  #ede8d8;
+      --ink:        #2d2a20;
+      --ink-light:  #5a5548;
+      --red:        #d45c4a;
+      --yellow:     #e8c44a;
+      --blue:       #4a7fc1;
+      --green:      #5a9e6f;
+      --orange:     #e07840;
+      --border:     #2d2a20;
+      --shadow:     4px 4px 0px #2d2a20;
+      --shadow-sm:  2px 2px 0px #2d2a20;
+      --sidebar-w:  228px;
     }
+
+    html, body { height: 100%; }
 
     body {
       background-color: var(--cream);
-      background-image:
-        linear-gradient(rgba(45,42,32,0.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(45,42,32,0.07) 1px, transparent 1px);
-      background-size: 24px 24px;
       font-family: 'Zen Kurenaido', sans-serif;
       color: var(--ink);
-      min-height: 100vh;
-      padding-bottom: 80px;
+      /* サイドバー ＋ メインエリアのレイアウト */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    /* ===== ヘッダー ===== */
+    /* ===== ヘッダー（全幅）===== */
     .header {
-      background-color: var(--cream-dark);
+      background: var(--cream-dark);
       border-bottom: 2px solid var(--border);
-      padding: 12px 20px;
+      box-shadow: 0 3px 0 var(--border);
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      /* 少し歪んだ感じ */
-      box-shadow: 0 3px 0 var(--border);
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 200;
+    }
+
+    /* サイドバー開閉ボタン */
+    .btn-sidebar-toggle {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      background: var(--cream);
+      box-shadow: var(--shadow-sm);
+      border-radius: 3px 5px 4px 3px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-sidebar-toggle:hover { transform: rotate(-2deg) scale(1.06); }
+    .btn-sidebar-toggle:active { transform: scale(0.9); }
+    .burger-line {
+      width: 18px; height: 2px;
+      background: var(--border);
+      border-radius: 1px;
     }
 
     .header-title {
       font-family: 'Caveat', cursive;
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 700;
-      color: var(--ink);
-      letter-spacing: 0.02em;
-      /* 微妙に傾ける */
       transform: rotate(-0.5deg);
     }
+    .header-title span { color: var(--red); }
 
-    .header-title span {
-      color: var(--red);
+    .header-sub {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-family: 'Caveat', cursive;
+      margin-top: 2px;
     }
 
-    /* XP情報エリア */
     .header-xp-area {
       margin-left: auto;
       display: flex;
       align-items: center;
       gap: 12px;
     }
-
     .level-badge {
       font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       background: var(--yellow);
       border: 2px solid var(--border);
@@ -94,59 +113,269 @@
       transform: rotate(1deg);
       white-space: nowrap;
     }
-
-    .xp-bar-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .xp-label {
-      font-family: 'Caveat', cursive;
-      font-size: 0.85rem;
-      color: var(--ink-light);
-    }
-
+    .xp-bar-wrap { display: flex; flex-direction: column; gap: 2px; }
+    .xp-label { font-family: 'Caveat', cursive; font-size: 0.82rem; color: var(--ink-light); }
     .xp-bar-outer {
-      width: 140px;
-      height: 16px;
+      width: 130px; height: 14px;
       border: 2px solid var(--border);
       background: var(--cream);
       box-shadow: var(--shadow-sm);
       overflow: hidden;
-      /* 定規で引いたような不均一感 */
       border-radius: 2px 4px 3px 2px;
     }
-
     .xp-bar-inner {
       height: 100%;
       background: var(--green);
-      /* むにょ〜っと伸びるアニメ */
       transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       border-right: 2px solid var(--border);
     }
 
-    /* ===== メインコンテナ ===== */
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 24px 16px;
+    /* ===== アプリ本体（サイドバー ＋ メイン）===== */
+    .app-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
     }
 
-    /* ===== クエストタイトル入力 ===== */
-    .quest-title-section {
-      margin-bottom: 28px;
+    /* ===== 左サイドバー ===== */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--cream-dark);
+      border-right: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.25s ease, opacity 0.25s ease;
     }
 
-    .quest-title-label {
+    .sidebar.collapsed {
+      width: 0;
+      opacity: 0;
+      border-right-width: 0;
+    }
+
+    /* サイドバー ヘッダー部分 */
+    .sidebar-header {
+      padding: 12px 12px 8px;
+      border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sidebar-header-label {
       font-family: 'Caveat', cursive;
-      font-size: 1.2rem;
+      font-size: 0.85rem;
       color: var(--ink-light);
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       transform: rotate(-0.3deg);
     }
 
+    /* 新しいクエストボタン */
+    .btn-new-quest {
+      width: 100%;
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: 2px solid var(--border);
+      background: var(--yellow);
+      box-shadow: var(--shadow-sm);
+      padding: 8px 0;
+      cursor: pointer;
+      border-radius: 3px 6px 4px 3px;
+      transform: rotate(-0.5deg);
+      transition: transform 0.15s, box-shadow 0.15s;
+      color: var(--ink);
+      text-align: center;
+    }
+    .btn-new-quest:hover  { transform: rotate(-1.5deg) scale(1.03); }
+    .btn-new-quest:active {
+      transform: rotate(1deg) scale(0.94);
+      box-shadow: 1px 1px 0px var(--border);
+    }
+
+    /* クエストリスト */
+    .quest-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 8px 16px;
+    }
+
+    /* クエスト1件カード */
+    .quest-item {
+      background: var(--cream);
+      border: 2px solid var(--border);
+      border-radius: 3px 6px 5px 3px;
+      box-shadow: var(--shadow-sm);
+      padding: 10px 10px 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .quest-item:nth-child(odd)  { transform: rotate(-0.3deg); }
+    .quest-item:nth-child(even) { transform: rotate(0.2deg); }
+
+    .quest-item:hover {
+      box-shadow: 4px 4px 0px var(--orange);
+      border-color: var(--orange);
+      z-index: 1;
+    }
+
+    /* アクティブなクエスト */
+    .quest-item.active {
+      border-color: var(--orange);
+      box-shadow: 4px 4px 0px var(--orange);
+      background: #fff9ee;
+    }
+    .quest-item.active:nth-child(odd)  { transform: rotate(-0.3deg); }
+    .quest-item.active:nth-child(even) { transform: rotate(0.2deg); }
+
+    /* クエストタイトル行 */
+    .quest-item-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 4px;
+      margin-bottom: 7px;
+    }
+
+    .quest-item-title {
+      font-family: 'Zen Kurenaido', sans-serif;
+      font-size: 0.88rem;
+      font-weight: bold;
+      line-height: 1.3;
+      flex: 1;
+      word-break: break-all;
+      /* 2行まで表示、3行目以降は … で省略 */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .quest-item-title.empty {
+      color: var(--ink-light);
+      font-style: italic;
+      font-family: 'Caveat', cursive;
+    }
+
+    /* クエスト削除ボタン */
+    .btn-quest-delete {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.4;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .quest-item:hover .btn-quest-delete { opacity: 1; color: var(--red); }
+    .btn-quest-delete:hover { background: #fce8e5; }
+
+    /* ===== 進捗ミニドット（サイドバー用）===== */
+    .quest-progress {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .progress-dot {
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      background: var(--cream);
+      font-family: 'Caveat', cursive;
+      font-size: 0.52rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-light);
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    /* 完了済みステップ：緑 */
+    .progress-dot.done {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    /* 現在のステップ：黄色 + 少し大きく */
+    .progress-dot.current {
+      background: var(--yellow);
+      border-color: var(--orange);
+      color: var(--ink);
+      transform: scale(1.2) rotate(-5deg);
+      box-shadow: 1px 1px 0 var(--border);
+    }
+
+    /* Phase区切り線（ドット間）*/
+    .progress-phase-sep {
+      width: 6px;
+      height: 1.5px;
+      background: var(--border);
+      opacity: 0.4;
+      flex-shrink: 0;
+    }
+
+    /* 完了バッジ */
+    .quest-done-badge {
+      font-family: 'Caveat', cursive;
+      font-size: 0.72rem;
+      background: var(--green);
+      color: white;
+      border: 1.5px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 2px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* 日付 */
+    .quest-item-date {
+      font-family: 'Caveat', cursive;
+      font-size: 0.72rem;
+      color: var(--ink-light);
+      margin-top: 5px;
+    }
+
+    /* ===== メインエリア ===== */
+    .main-area {
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--cream);
+      background-image:
+        linear-gradient(rgba(45,42,32,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,42,32,0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    /* ===== クエストタイトル入力 ===== */
+    .quest-title-section { margin-bottom: 24px; }
+    .quest-title-label {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--ink-light);
+      display: block;
+      margin-bottom: 5px;
+      transform: rotate(-0.3deg);
+    }
     .quest-title-input {
       width: 100%;
       font-family: 'Zen Kurenaido', sans-serif;
@@ -154,27 +383,20 @@
       border: none;
       border-bottom: 3px solid var(--border);
       background: transparent;
-      padding: 6px 4px;
+      padding: 5px 4px;
       color: var(--ink);
       outline: none;
     }
+    .quest-title-input::placeholder { color: #bbb; font-family: 'Caveat', cursive; }
 
-    .quest-title-input::placeholder {
-      color: #bbb;
-      font-family: 'Caveat', cursive;
-    }
-
-    /* ===== 進捗ステップバー ===== */
+    /* ===== 上部ステップバー ===== */
     .step-track {
       display: flex;
       align-items: center;
-      gap: 0;
-      margin-bottom: 32px;
-      padding: 0 4px;
+      margin-bottom: 28px;
+      padding-bottom: 6px;
       overflow-x: auto;
-      padding-bottom: 8px;
     }
-
     .step-node {
       display: flex;
       flex-direction: column;
@@ -183,10 +405,8 @@
       cursor: pointer;
       flex-shrink: 0;
     }
-
     .step-dot {
-      width: 32px;
-      height: 32px;
+      width: 34px; height: 34px;
       border: 2px solid var(--border);
       border-radius: 50%;
       background: var(--cream);
@@ -199,145 +419,118 @@
       box-shadow: var(--shadow-sm);
       transition: transform 0.2s, background 0.2s;
     }
-
     .step-node.active .step-dot {
       background: var(--yellow);
       transform: scale(1.15) rotate(-3deg);
     }
-
     .step-node.done .step-dot {
       background: var(--green);
       color: white;
     }
-
     .step-label {
       font-family: 'Caveat', cursive;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--ink-light);
       white-space: nowrap;
     }
-
     .step-line {
       flex: 1;
       height: 2px;
       background: var(--border);
-      min-width: 20px;
-      margin-bottom: 18px;
-      /* 少しガタついた線 */
-      opacity: 0.4;
+      min-width: 16px;
+      margin-bottom: 20px;
+      opacity: 0.35;
     }
 
-    /* ===== カセツくんキャラクター（CSS描画）===== */
+    /* ===== カセツくん ===== */
     .kasetukunn-wrap {
       display: flex;
       align-items: flex-end;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       cursor: pointer;
       user-select: none;
     }
-
-    /* キャラクター本体 */
     .kasetukunn-body {
       position: relative;
       flex-shrink: 0;
       width: 64px;
       height: 80px;
+      animation: float 3s ease-in-out infinite;
     }
-
-    /* 頭 */
+    .kasetukunn-wrap:active .kasetukunn-body {
+      animation: none;
+      transform: scale(0.92) rotate(-3deg);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-4px); }
+    }
     .k-head {
       position: absolute;
-      top: 0;
-      left: 50%;
+      top: 0; left: 50%;
       transform: translateX(-50%);
-      width: 48px;
-      height: 46px;
+      width: 48px; height: 46px;
       background: var(--cream-dark);
       border: 2px solid var(--border);
       border-radius: 50% 52% 48% 50% / 48% 50% 52% 50%;
       box-shadow: var(--shadow-sm);
     }
-
-    /* 目（左） */
     .k-eye-l, .k-eye-r {
       position: absolute;
-      width: 7px;
-      height: 7px;
+      width: 7px; height: 7px;
       background: var(--border);
       border-radius: 50%;
       top: 16px;
     }
     .k-eye-l { left: 10px; }
     .k-eye-r { right: 10px; }
-
-    /* 口：通常（への字） */
     .k-mouth {
       position: absolute;
-      bottom: 10px;
-      left: 50%;
+      bottom: 10px; left: 50%;
       transform: translateX(-50%);
-      width: 18px;
-      height: 8px;
+      width: 18px; height: 8px;
       border: 2px solid var(--border);
       border-top: none;
       border-radius: 0 0 10px 10px;
     }
-
-    /* 口：うれしい */
     .k-mouth-happy {
       position: absolute;
-      bottom: 10px;
-      left: 50%;
+      bottom: 10px; left: 50%;
       transform: translateX(-50%);
-      width: 20px;
-      height: 10px;
+      width: 20px; height: 10px;
       border: 2px solid var(--border);
       border-top: none;
       border-radius: 0 0 14px 14px;
     }
-
-    /* 口：うーん（困り顔） */
     .k-mouth-hmm {
       position: absolute;
-      bottom: 11px;
-      left: 50%;
+      bottom: 11px; left: 50%;
       transform: translateX(-50%) rotate(180deg);
-      width: 16px;
-      height: 7px;
+      width: 16px; height: 7px;
       border: 2px solid var(--border);
       border-top: none;
       border-radius: 0 0 10px 10px;
     }
-
-    /* 胴体 */
     .k-body-torso {
       position: absolute;
-      bottom: 0;
-      left: 50%;
+      bottom: 0; left: 50%;
       transform: translateX(-50%);
-      width: 36px;
-      height: 32px;
+      width: 36px; height: 32px;
       background: var(--blue);
       border: 2px solid var(--border);
       border-radius: 4px 6px 3px 5px;
       box-shadow: var(--shadow-sm);
     }
-
-    /* 首 */
     .k-neck {
       position: absolute;
-      top: 43px;
-      left: 50%;
+      top: 43px; left: 50%;
       transform: translateX(-50%);
-      width: 12px;
-      height: 8px;
+      width: 12px; height: 8px;
       background: var(--cream-dark);
       border-left: 2px solid var(--border);
       border-right: 2px solid var(--border);
     }
-
-    /* セリフバブル */
     .k-speech {
       position: relative;
       background: var(--cream);
@@ -346,20 +539,14 @@
       padding: 10px 14px;
       border-radius: 8px 12px 12px 10px;
       max-width: 240px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       line-height: 1.5;
-      /* 少し傾ける */
       transform: rotate(0.5deg);
     }
-
-    /* セリフの矢印 */
     .k-speech::before {
       content: '';
       position: absolute;
-      left: -12px;
-      bottom: 16px;
-      width: 0;
-      height: 0;
+      left: -12px; bottom: 16px;
       border-top: 8px solid transparent;
       border-bottom: 6px solid transparent;
       border-right: 12px solid var(--border);
@@ -367,35 +554,16 @@
     .k-speech::after {
       content: '';
       position: absolute;
-      left: -9px;
-      bottom: 17px;
-      width: 0;
-      height: 0;
+      left: -9px; bottom: 17px;
       border-top: 7px solid transparent;
       border-bottom: 5px solid transparent;
       border-right: 10px solid var(--cream);
     }
-
     .k-hint {
       font-family: 'Caveat', cursive;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--ink-light);
-      margin-top: 6px;
-    }
-
-    /* キャラクターのふわふわアニメ */
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-4px); }
-    }
-    .kasetukunn-body {
-      animation: float 3s ease-in-out infinite;
-    }
-
-    /* クリック時にぐにゅ */
-    .kasetukunn-wrap:active .kasetukunn-body {
-      animation: none;
-      transform: scale(0.92) rotate(-3deg);
+      margin-top: 5px;
     }
 
     /* ===== フェーズヘッダー ===== */
@@ -403,84 +571,62 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
-      margin-top: 8px;
+      margin-bottom: 14px;
+      margin-top: 6px;
     }
-
     .phase-badge {
       font-family: 'Caveat', cursive;
       font-size: 1rem;
       font-weight: 700;
-      padding: 4px 12px;
+      padding: 3px 12px;
       border: 2px solid var(--border);
       box-shadow: var(--shadow-sm);
       transform: rotate(-1deg);
     }
-
     .phase-1 .phase-badge { background: var(--red); color: white; }
     .phase-2 .phase-badge { background: var(--blue); color: white; }
-
-    .phase-title {
-      font-family: 'Caveat', cursive;
-      font-size: 1.3rem;
-      font-weight: 700;
-    }
+    .phase-title { font-family: 'Caveat', cursive; font-size: 1.25rem; font-weight: 700; }
 
     /* ===== ステップカード ===== */
     .step-card {
       background: var(--cream);
       border: 2px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 20px;
-      margin-bottom: 16px;
-      /* 非対称な角丸でヘタウマ感 */
+      padding: 18px;
+      margin-bottom: 14px;
       border-radius: 4px 8px 6px 3px;
       transition: transform 0.2s;
-      /* 少しランダムに傾ける（JSで個別に設定） */
     }
-
     .step-card:nth-child(odd)  { transform: rotate(-0.3deg); }
     .step-card:nth-child(even) { transform: rotate(0.2deg); }
-
     .step-card.active-step {
       border-color: var(--orange);
       box-shadow: 5px 5px 0px var(--orange);
     }
-
     .step-card-header {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
     }
-
     .step-number {
       font-family: 'Caveat', cursive;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 700;
       color: var(--red);
       line-height: 1;
     }
-
-    .step-card-title {
-      font-size: 1rem;
-      font-weight: bold;
-      flex: 1;
-    }
-
+    .step-card-title { font-size: 0.97rem; font-weight: bold; flex: 1; }
     .step-done-mark {
       font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: var(--green);
       font-weight: 700;
       display: none;
     }
+    .step-card.done-step .step-done-mark { display: inline; }
 
-    .step-card.done-step .step-done-mark {
-      display: inline;
-    }
-
-    /* ===== テキストエリア ===== */
+    /* ===== フォーム部品 ===== */
     .step-textarea {
       width: 100%;
       min-height: 80px;
@@ -489,70 +635,45 @@
       background: #fffef8;
       padding: 10px;
       font-family: 'Zen Kurenaido', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       color: var(--ink);
       resize: vertical;
       outline: none;
       box-shadow: inset 2px 2px 0px rgba(45,42,32,0.08);
-      transition: border-color 0.2s;
     }
+    .step-textarea:focus { border-color: var(--orange); }
 
-    .step-textarea:focus {
-      border-color: var(--orange);
-    }
-
-    /* ===== 動的リスト（原因・アイデア）===== */
     .list-label {
       font-family: 'Caveat', cursive;
-      font-size: 1rem;
+      font-size: 0.97rem;
       color: var(--ink-light);
       margin-bottom: 8px;
       display: block;
     }
-
-    .dynamic-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .list-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* 手書き風の行頭マーク */
+    .dynamic-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .list-item { display: flex; align-items: center; gap: 8px; }
     .list-bullet {
-      width: 10px;
-      height: 10px;
+      width: 10px; height: 10px;
       border: 2px solid var(--border);
       border-radius: 50%;
       flex-shrink: 0;
       background: var(--yellow);
     }
-
     .list-input {
       flex: 1;
       border: none;
       border-bottom: 2px solid var(--border);
       background: transparent;
       font-family: 'Zen Kurenaido', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       color: var(--ink);
       padding: 4px 2px;
       outline: none;
     }
+    .list-input:focus { border-bottom-color: var(--orange); }
 
-    .list-input:focus {
-      border-bottom-color: var(--orange);
-    }
-
-    /* 削除ボタン */
     .btn-remove {
-      width: 22px;
-      height: 22px;
+      width: 22px; height: 22px;
       border: 2px solid var(--border);
       background: var(--cream);
       cursor: pointer;
@@ -567,18 +688,14 @@
       flex-shrink: 0;
       transition: transform 0.15s;
     }
+    .btn-remove:active { transform: scale(0.88) rotate(5deg); }
 
-    .btn-remove:active {
-      transform: scale(0.88) rotate(5deg);
-    }
-
-    /* ＋追加ボタン */
     .btn-add {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       font-family: 'Caveat', cursive;
-      font-size: 1rem;
+      font-size: 0.97rem;
       font-weight: 700;
       border: 2px solid var(--border);
       background: var(--cream);
@@ -590,27 +707,15 @@
       transition: transform 0.15s, box-shadow 0.15s;
       color: var(--ink);
     }
-
-    .btn-add:hover {
-      transform: rotate(-2deg) scale(1.04);
-    }
-
+    .btn-add:hover  { transform: rotate(-2deg) scale(1.04); }
     .btn-add:active {
       transform: rotate(1deg) scale(0.94);
       box-shadow: 1px 1px 0px var(--border);
     }
 
-    /* ===== チェックリスト（2b 打手選択）===== */
-    .checklist-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-    }
-
+    .checklist-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
     .check-box {
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border: 2px solid var(--border);
       background: var(--cream);
       flex-shrink: 0;
@@ -624,121 +729,93 @@
       font-size: 1rem;
       transition: background 0.15s, transform 0.15s;
     }
-
     .check-box.checked {
       background: var(--green);
       color: white;
       transform: rotate(-3deg) scale(1.1);
     }
+    .check-label { flex: 1; font-size: 0.93rem; }
 
-    .check-label {
-      flex: 1;
-      font-size: 0.95rem;
-    }
-
-    /* ===== ナビゲーションボタン ===== */
-    .nav-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-
+    /* ===== ナビゲーション ===== */
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
     .btn-nav {
       font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      padding: 10px 24px;
+      padding: 10px 22px;
       border: 2px solid var(--border);
       box-shadow: var(--shadow);
       cursor: pointer;
       border-radius: 4px 6px 5px 3px;
       transition: transform 0.15s, box-shadow 0.15s;
     }
+    .btn-nav:active { transform: scale(0.93) rotate(1deg); box-shadow: 1px 1px 0px var(--border); }
+    .btn-prev { background: var(--cream-dark); transform: rotate(0.5deg); }
+    .btn-prev:hover { transform: rotate(1.5deg); }
+    .btn-next { background: var(--yellow); transform: rotate(-1deg); }
+    .btn-next:hover { transform: rotate(-2deg) scale(1.04); }
+    .btn-complete { background: var(--green); color: white; transform: rotate(-1.5deg); }
+    .btn-complete:hover { transform: rotate(-3deg) scale(1.06); }
 
-    .btn-nav:active {
-      transform: scale(0.93) rotate(1deg);
-      box-shadow: 1px 1px 0px var(--border);
+    .section-divider {
+      border: none;
+      border-top: 2px dashed rgba(45,42,32,0.22);
+      margin: 24px 0;
     }
 
-    .btn-prev {
-      background: var(--cream-dark);
-      transform: rotate(0.5deg);
-    }
+    /* ===== ステップ表示制御 ===== */
+    .step-section { display: none; }
+    .step-section.visible { display: block; }
 
-    .btn-prev:hover {
-      transform: rotate(1.5deg);
+    /* ===== XP ポップアップ ===== */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 998;
+      display: none;
     }
+    .overlay.show { display: block; }
 
-    .btn-next {
-      background: var(--yellow);
-      transform: rotate(-1deg);
-    }
-
-    .btn-next:hover {
-      transform: rotate(-2deg) scale(1.04);
-    }
-
-    .btn-complete {
-      background: var(--green);
-      color: white;
-      transform: rotate(-1.5deg);
-    }
-
-    .btn-complete:hover {
-      transform: rotate(-3deg) scale(1.06);
-    }
-
-    /* ===== XPゲインポップアップ ===== */
     .xp-popup {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(0);
       z-index: 999;
       background: var(--yellow);
       border: 3px solid var(--border);
       box-shadow: 6px 6px 0px var(--border);
-      padding: 28px 40px;
+      padding: 26px 38px;
       text-align: center;
       border-radius: 6px 10px 8px 5px;
       pointer-events: none;
       transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-
     .xp-popup.show {
       transform: translate(-50%, -50%) scale(1) rotate(-1deg);
       pointer-events: auto;
     }
-
     .xp-popup-title {
       font-family: 'Caveat', cursive;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 700;
       color: var(--border);
       display: block;
       margin-bottom: 6px;
     }
-
     .xp-popup-amount {
       font-family: 'Caveat', cursive;
-      font-size: 3.5rem;
+      font-size: 3.2rem;
       font-weight: 700;
       color: var(--red);
       display: block;
       margin-bottom: 8px;
     }
-
-    .xp-popup-msg {
-      font-size: 1rem;
-      color: var(--ink-light);
-      margin-bottom: 16px;
-    }
-
+    .xp-popup-msg { font-size: 0.97rem; color: var(--ink-light); margin-bottom: 16px; }
     .btn-popup-close {
       font-family: 'Caveat', cursive;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      padding: 8px 24px;
+      padding: 8px 22px;
       background: var(--ink);
       color: var(--cream);
       border: 2px solid var(--border);
@@ -748,325 +825,272 @@
       transform: rotate(1deg);
       transition: transform 0.15s;
     }
+    .btn-popup-close:hover { transform: rotate(-1deg) scale(1.05); }
 
-    .btn-popup-close:hover {
-      transform: rotate(-1deg) scale(1.05);
-    }
-
-    /* ポップアップ背景 */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.35);
-      z-index: 998;
-      display: none;
-    }
-
-    .overlay.show {
-      display: block;
-    }
-
-    /* ===== ステップ表示制御 ===== */
-    .step-section {
-      display: none;
-    }
-
-    .step-section.visible {
-      display: block;
-    }
-
-    /* ===== セクション区切り ===== */
-    .section-divider {
-      border: none;
-      border-top: 2px dashed rgba(45,42,32,0.25);
-      margin: 28px 0;
-    }
-
-    /* ===== レベルアップバナー ===== */
+    /* ===== レベルアップポップアップ ===== */
     @keyframes levelup {
       0%   { transform: translate(-50%, -50%) scale(0) rotate(-5deg); }
       60%  { transform: translate(-50%, -50%) scale(1.1) rotate(2deg); }
       100% { transform: translate(-50%, -50%) scale(1) rotate(-1deg); }
     }
-
     .levelup-popup {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(0);
       z-index: 1000;
       background: var(--red);
       border: 3px solid var(--border);
       box-shadow: 8px 8px 0px var(--border);
-      padding: 32px 48px;
+      padding: 30px 46px;
       text-align: center;
       border-radius: 8px 12px 10px 6px;
       pointer-events: none;
     }
+    .levelup-popup.show { animation: levelup 0.5s forwards; pointer-events: auto; }
+    .levelup-title { font-family: 'Caveat', cursive; font-size: 1.3rem; color: white; display: block; margin-bottom: 4px; }
+    .levelup-level { font-family: 'Caveat', cursive; font-size: 3.8rem; font-weight: 700; color: var(--yellow); display: block; }
+    .levelup-msg { font-size: 0.93rem; color: rgba(255,255,255,0.85); margin-bottom: 16px; }
 
-    .levelup-popup.show {
-      animation: levelup 0.5s forwards;
-      pointer-events: auto;
-    }
-
-    .levelup-title {
-      font-family: 'Caveat', cursive;
-      font-size: 1.4rem;
-      color: white;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .levelup-level {
-      font-family: 'Caveat', cursive;
-      font-size: 4rem;
-      font-weight: 700;
-      color: var(--yellow);
-      display: block;
-    }
-
-    .levelup-msg {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: 18px;
-    }
-
-    /* ===== スクロールバー（おまけのヘタウマ感）===== */
-    ::-webkit-scrollbar { width: 8px; }
+    /* ===== スクロールバー ===== */
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--cream-dark); }
-    ::-webkit-scrollbar-thumb {
-      background: var(--ink-light);
-      border-radius: 2px;
-    }
+    ::-webkit-scrollbar-thumb { background: var(--ink-light); border-radius: 2px; }
   </style>
 </head>
 <body>
 
-  <!-- ===== ヘッダー ===== -->
+  <!-- ===== ヘッダー（全幅）===== -->
   <header class="header">
-    <div class="header-title">カセツ<span>くん</span></div>
-    <div style="font-size:0.85rem; color: var(--ink-light); font-family:'Caveat',cursive; margin-top:2px;">仮説検証クエスト</div>
+    <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="クエスト一覧を開閉">
+      <div class="burger-line"></div>
+      <div class="burger-line"></div>
+      <div class="burger-line"></div>
+    </button>
+    <div>
+      <div class="header-title">カセツ<span>くん</span></div>
+      <div class="header-sub">仮説検証クエスト</div>
+    </div>
     <div class="header-xp-area">
       <div class="xp-bar-wrap">
         <span class="xp-label">XP: <span id="xpCurrent">0</span> / <span id="xpMax">100</span></span>
         <div class="xp-bar-outer">
-          <div class="xp-bar-inner" id="xpBar" style="width: 0%;"></div>
+          <div class="xp-bar-inner" id="xpBar" style="width:0%"></div>
         </div>
       </div>
       <div class="level-badge">Lv.<span id="levelDisp">1</span></div>
     </div>
   </header>
 
-  <!-- ===== メインコンテナ ===== -->
-  <main class="container">
+  <!-- ===== アプリ本体 ===== -->
+  <div class="app-body">
 
-    <!-- クエストタイトル -->
-    <div class="quest-title-section">
-      <span class="quest-title-label">今日のクエスト（解きたい問題）</span>
-      <input type="text" class="quest-title-input" id="questTitle"
-             placeholder="例：なぜ売上が下がってるんだろう…" />
-    </div>
-
-    <!-- 進捗バー -->
-    <div class="step-track" id="stepTrack">
-      <!-- JSで生成 -->
-    </div>
-
-    <!-- カセツくんキャラクター -->
-    <div class="kasetukunn-wrap" id="kasetu" onclick="nextAdvice()">
-      <div class="kasetukunn-body">
-        <!-- 首 -->
-        <div class="k-neck"></div>
-        <!-- 頭 -->
-        <div class="k-head">
-          <div class="k-eye-l" id="eyeL"></div>
-          <div class="k-eye-r" id="eyeR"></div>
-          <div class="k-mouth" id="kMouth"></div>
-        </div>
-        <!-- 胴体 -->
-        <div class="k-body-torso"></div>
-      </div>
-      <div class="k-speech">
-        <span id="adviceText">わかんないけど、とりあえず書いてみよ。最初はそれでいい。</span>
-        <p class="k-hint">（クリックで次のひとこと）</p>
-      </div>
-    </div>
-
-    <!-- ===== Phase 1 セクション ===== -->
-    <div id="phase1Header" class="phase-header phase-1">
-      <span class="phase-badge">Phase 1</span>
-      <span class="phase-title">原因を見極める</span>
-    </div>
-
-    <!-- 1a: 原因の洗い出し -->
-    <div class="step-section visible" id="step-1a">
-      <div class="step-card" id="card-1a">
-        <div class="step-card-header">
-          <span class="step-number">1a</span>
-          <span class="step-card-title">原因としてあり得るものを洗い出す</span>
-          <span class="step-done-mark">✓ できた！</span>
-        </div>
-        <span class="list-label">思いつく原因を全部書いてみよ（多いほどよし）</span>
-        <div class="dynamic-list" id="list-1a">
-          <!-- JSで生成 -->
-        </div>
-        <button class="btn-add" onclick="addListItem('list-1a', '1a')">
-          <span>＋</span> 原因を追加
+    <!-- ===== 左サイドバー ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-header-label">クエスト一覧</span>
+        <button class="btn-new-quest" onclick="createNewQuest()">
+          ＋ 新しいクエスト
         </button>
       </div>
-    </div>
+      <!-- クエストリスト（JSで生成）-->
+      <div class="quest-list" id="questList"></div>
+    </aside>
 
-    <!-- 1b: 仮説 -->
-    <div class="step-section" id="step-1b">
-      <div class="step-card" id="card-1b">
-        <div class="step-card-header">
-          <span class="step-number">1b</span>
-          <span class="step-card-title">原因の仮説を立てる</span>
-          <span class="step-done-mark">✓ できた！</span>
+    <!-- ===== メインエリア ===== -->
+    <div class="main-area" id="mainArea">
+      <div class="container">
+
+        <!-- クエストタイトル -->
+        <div class="quest-title-section">
+          <span class="quest-title-label">今日のクエスト（解きたい問題）</span>
+          <input type="text" class="quest-title-input" id="questTitle"
+                 placeholder="例：なぜ売上が下がってるんだろう…"
+                 oninput="onTitleChange()" />
         </div>
-        <span class="list-label">「たぶんこれが本当の原因じゃないかな」って思うものを絞り込んでみよ</span>
-        <div class="dynamic-list" id="list-1b"></div>
-        <button class="btn-add" onclick="addListItem('list-1b', '1b')">
-          <span>＋</span> 仮説を追加
-        </button>
-      </div>
-    </div>
 
-    <!-- 1c: 分析計画 -->
-    <div class="step-section" id="step-1c">
-      <div class="step-card" id="card-1c">
-        <div class="step-card-header">
-          <span class="step-number">1c</span>
-          <span class="step-card-title">どんな分析をするか考えて情報を集める</span>
-          <span class="step-done-mark">✓ できた！</span>
+        <!-- ステップバー -->
+        <div class="step-track" id="stepTrack"></div>
+
+        <!-- カセツくん -->
+        <div class="kasetukunn-wrap" id="kasetu" onclick="nextAdvice()">
+          <div class="kasetukunn-body">
+            <div class="k-neck"></div>
+            <div class="k-head">
+              <div class="k-eye-l"></div>
+              <div class="k-eye-r"></div>
+              <div class="k-mouth" id="kMouth"></div>
+            </div>
+            <div class="k-body-torso"></div>
+          </div>
+          <div class="k-speech">
+            <span id="adviceText">わかんないけど、とりあえず書いてみよ。最初はそれでいい。</span>
+            <p class="k-hint">（クリックで次のひとこと）</p>
+          </div>
         </div>
-        <span class="list-label">仮説を確かめるために「何を調べればいいか」を書こう</span>
-        <div class="dynamic-list" id="list-1c"></div>
-        <button class="btn-add" onclick="addListItem('list-1c', '1c')">
-          <span>＋</span> 調べることを追加
-        </button>
-      </div>
-    </div>
 
-    <!-- 1d: 分析する -->
-    <div class="step-section" id="step-1d">
-      <div class="step-card" id="card-1d">
-        <div class="step-card-header">
-          <span class="step-number">1d</span>
-          <span class="step-card-title">分析する</span>
-          <span class="step-done-mark">✓ できた！</span>
+        <!-- Phase 1 -->
+        <div class="phase-header phase-1">
+          <span class="phase-badge">Phase 1</span>
+          <span class="phase-title">原因を見極める</span>
         </div>
-        <span class="list-label">調べた結果・わかったこと</span>
-        <textarea class="step-textarea" id="textarea-1d"
-                  placeholder="調べてみたら……こんなことがわかった。"></textarea>
-        <span class="list-label" style="margin-top:12px; display:block;">結論：原因はこれだ</span>
-        <textarea class="step-textarea" id="conclusion-1d" style="min-height:60px;"
-                  placeholder="結局、一番の原因は……"></textarea>
-      </div>
-    </div>
 
-    <!-- Phase 1 完了ボタン -->
-    <div class="step-section" id="phase1-complete-btn">
-      <div style="text-align:center; margin: 16px 0 8px;">
-        <button class="btn-nav btn-complete" onclick="completePhase(1)">
-          Phase 1 クリア！ + 50 XP
-        </button>
-      </div>
-    </div>
-
-    <hr class="section-divider" id="phase2Divider" style="display:none;" />
-
-    <!-- ===== Phase 2 セクション ===== -->
-    <div id="phase2Header" class="phase-header phase-2" style="display:none;">
-      <span class="phase-badge">Phase 2</span>
-      <span class="phase-title">打手を考える</span>
-    </div>
-
-    <!-- 2a: アイデア出し -->
-    <div class="step-section" id="step-2a">
-      <div class="step-card" id="card-2a">
-        <div class="step-card-header">
-          <span class="step-number">2a</span>
-          <span class="step-card-title">打手のアイデアを幅広く出す</span>
-          <span class="step-done-mark">✓ できた！</span>
+        <!-- 1a -->
+        <div class="step-section visible" id="step-1a">
+          <div class="step-card" id="card-1a">
+            <div class="step-card-header">
+              <span class="step-number">1a</span>
+              <span class="step-card-title">原因としてあり得るものを洗い出す</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">思いつく原因を全部書いてみよ（多いほどよし）</span>
+            <div class="dynamic-list" id="list-1a"></div>
+            <button class="btn-add" onclick="addListItem('list-1a','1a')">＋ 原因を追加</button>
+          </div>
         </div>
-        <span class="list-label">「こうしたらいいかも」ってアイデアを全部出してみよ、質より量！</span>
-        <div class="dynamic-list" id="list-2a"></div>
-        <button class="btn-add" onclick="addListItem('list-2a', '2a')">
-          <span>＋</span> アイデアを追加
-        </button>
-      </div>
-    </div>
 
-    <!-- 2b: 打手選択 -->
-    <div class="step-section" id="step-2b">
-      <div class="step-card" id="card-2b">
-        <div class="step-card-header">
-          <span class="step-number">2b</span>
-          <span class="step-card-title">最適な打手を選択する</span>
-          <span class="step-done-mark">✓ できた！</span>
+        <!-- 1b -->
+        <div class="step-section" id="step-1b">
+          <div class="step-card" id="card-1b">
+            <div class="step-card-header">
+              <span class="step-number">1b</span>
+              <span class="step-card-title">原因の仮説を立てる</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">「たぶんこれが本当の原因じゃないかな」って思うものを絞り込んでみよ</span>
+            <div class="dynamic-list" id="list-1b"></div>
+            <button class="btn-add" onclick="addListItem('list-1b','1b')">＋ 仮説を追加</button>
+          </div>
         </div>
-        <span class="list-label">↑のアイデアの中から「これだ！」と思うものにチェック</span>
-        <div id="checklist-2b" class="dynamic-list">
-          <span style="font-size:0.88rem; color:var(--ink-light); font-family:'Caveat',cursive;">
-            2a でアイデアを書くと自動でここに出てくるよ
-          </span>
+
+        <!-- 1c -->
+        <div class="step-section" id="step-1c">
+          <div class="step-card" id="card-1c">
+            <div class="step-card-header">
+              <span class="step-number">1c</span>
+              <span class="step-card-title">どんな分析をするか考えて情報を集める</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">仮説を確かめるために「何を調べればいいか」を書こう</span>
+            <div class="dynamic-list" id="list-1c"></div>
+            <button class="btn-add" onclick="addListItem('list-1c','1c')">＋ 調べることを追加</button>
+          </div>
         </div>
-        <span class="list-label" style="margin-top:12px; display:block;">選んだ理由</span>
-        <textarea class="step-textarea" id="reason-2b" style="min-height:60px;"
-                  placeholder="この打手にしたのは……"></textarea>
-      </div>
-    </div>
 
-    <!-- 2c: 実行プラン -->
-    <div class="step-section" id="step-2c">
-      <div class="step-card" id="card-2c">
-        <div class="step-card-header">
-          <span class="step-number">2c</span>
-          <span class="step-card-title">実行プランを作成する</span>
-          <span class="step-done-mark">✓ できた！</span>
+        <!-- 1d -->
+        <div class="step-section" id="step-1d">
+          <div class="step-card" id="card-1d">
+            <div class="step-card-header">
+              <span class="step-number">1d</span>
+              <span class="step-card-title">分析する</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">調べた結果・わかったこと</span>
+            <textarea class="step-textarea" id="textarea-1d"
+                      placeholder="調べてみたら……こんなことがわかった。"></textarea>
+            <span class="list-label" style="margin-top:12px;display:block;">結論：原因はこれだ</span>
+            <textarea class="step-textarea" id="conclusion-1d" style="min-height:60px;"
+                      placeholder="結局、一番の原因は……"></textarea>
+          </div>
         </div>
-        <span class="list-label">いつ・だれが・何をやるか（アクションリスト）</span>
-        <div class="dynamic-list" id="list-2c"></div>
-        <button class="btn-add" onclick="addListItem('list-2c', '2c')">
-          <span>＋</span> アクションを追加
-        </button>
-        <span class="list-label" style="margin-top:12px; display:block;">期限</span>
-        <input type="date" id="deadline-2c" style="
-          border: 2px solid var(--border);
-          background: var(--cream);
-          padding: 6px 10px;
-          font-family: 'Caveat', cursive;
-          font-size: 1rem;
-          border-radius: 3px;
-          box-shadow: var(--shadow-sm);
-        " />
-      </div>
-    </div>
 
-    <!-- Phase 2 完了ボタン -->
-    <div class="step-section" id="phase2-complete-btn">
-      <div style="text-align:center; margin: 16px 0 8px;">
-        <button class="btn-nav btn-complete" onclick="completePhase(2)">
-          クエスト完了！ + 80 XP
-        </button>
-      </div>
-    </div>
+        <!-- Phase 1 完了ボタン -->
+        <div class="step-section" id="phase1-complete-btn">
+          <div style="text-align:center;margin:16px 0 8px;">
+            <button class="btn-nav btn-complete" onclick="completePhase(1)">
+              Phase 1 クリア！ +50 XP
+            </button>
+          </div>
+        </div>
 
-    <!-- ===== ナビゲーション ===== -->
-    <div class="nav-buttons" id="navButtons">
-      <button class="btn-nav btn-prev" id="btnPrev" onclick="prevStep()" style="visibility:hidden;">
-        ← もどる
-      </button>
-      <button class="btn-nav btn-next" id="btnNext" onclick="nextStep()">
-        つぎへ →
-      </button>
-    </div>
+        <hr class="section-divider" id="phase2Divider" style="display:none;" />
 
-  </main>
+        <!-- Phase 2 -->
+        <div id="phase2Header" class="phase-header phase-2" style="display:none;">
+          <span class="phase-badge">Phase 2</span>
+          <span class="phase-title">打手を考える</span>
+        </div>
 
-  <!-- ===== XPゲインポップアップ ===== -->
+        <!-- 2a -->
+        <div class="step-section" id="step-2a">
+          <div class="step-card" id="card-2a">
+            <div class="step-card-header">
+              <span class="step-number">2a</span>
+              <span class="step-card-title">打手のアイデアを幅広く出す</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">「こうしたらいいかも」ってアイデアを全部出してみよ、質より量！</span>
+            <div class="dynamic-list" id="list-2a"></div>
+            <button class="btn-add" onclick="addListItem('list-2a','2a')">＋ アイデアを追加</button>
+          </div>
+        </div>
+
+        <!-- 2b -->
+        <div class="step-section" id="step-2b">
+          <div class="step-card" id="card-2b">
+            <div class="step-card-header">
+              <span class="step-number">2b</span>
+              <span class="step-card-title">最適な打手を選択する</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">↑のアイデアの中から「これだ！」と思うものにチェック</span>
+            <div id="checklist-2b" class="dynamic-list">
+              <span style="font-size:0.86rem;color:var(--ink-light);font-family:'Caveat',cursive;">
+                2a でアイデアを書くと自動でここに出てくるよ
+              </span>
+            </div>
+            <span class="list-label" style="margin-top:12px;display:block;">選んだ理由</span>
+            <textarea class="step-textarea" id="reason-2b" style="min-height:60px;"
+                      placeholder="この打手にしたのは……"></textarea>
+          </div>
+        </div>
+
+        <!-- 2c -->
+        <div class="step-section" id="step-2c">
+          <div class="step-card" id="card-2c">
+            <div class="step-card-header">
+              <span class="step-number">2c</span>
+              <span class="step-card-title">実行プランを作成する</span>
+              <span class="step-done-mark">✓ できた！</span>
+            </div>
+            <span class="list-label">いつ・だれが・何をやるか（アクションリスト）</span>
+            <div class="dynamic-list" id="list-2c"></div>
+            <button class="btn-add" onclick="addListItem('list-2c','2c')">＋ アクションを追加</button>
+            <span class="list-label" style="margin-top:12px;display:block;">期限</span>
+            <input type="date" id="deadline-2c" style="
+              border:2px solid var(--border);background:var(--cream);
+              padding:6px 10px;font-family:'Caveat',cursive;font-size:1rem;
+              border-radius:3px;box-shadow:var(--shadow-sm);
+            " />
+          </div>
+        </div>
+
+        <!-- Phase 2 完了ボタン -->
+        <div class="step-section" id="phase2-complete-btn">
+          <div style="text-align:center;margin:16px 0 8px;">
+            <button class="btn-nav btn-complete" onclick="completePhase(2)">
+              クエスト完了！ +80 XP
+            </button>
+          </div>
+        </div>
+
+        <!-- ナビゲーション -->
+        <div class="nav-buttons">
+          <button class="btn-nav btn-prev" id="btnPrev" onclick="prevStep()" style="visibility:hidden;">
+            ← もどる
+          </button>
+          <button class="btn-nav btn-next" id="btnNext" onclick="nextStep()">
+            つぎへ →
+          </button>
+        </div>
+
+      </div><!-- /container -->
+    </div><!-- /main-area -->
+
+  </div><!-- /app-body -->
+
+  <!-- ===== ポップアップ類 ===== -->
   <div class="overlay" id="overlay" onclick="closePopup()"></div>
+
   <div class="xp-popup" id="xpPopup">
     <span class="xp-popup-title" id="popupTitle">Phase クリア！</span>
     <span class="xp-popup-amount" id="popupXP">+50 XP</span>
@@ -1074,65 +1098,322 @@
     <button class="btn-popup-close" onclick="closePopup()">つぎへ進む</button>
   </div>
 
-  <!-- レベルアップポップアップ -->
   <div class="levelup-popup" id="levelupPopup">
     <span class="levelup-title">レベルアップ！</span>
     <span class="levelup-level">Lv.<span id="newLevel">2</span></span>
     <p class="levelup-msg">なんかいい感じになってきた</p>
-    <button class="btn-popup-close" onclick="closeLevelup()" style="margin-top:0;">
-      やったぁ
-    </button>
+    <button class="btn-popup-close" onclick="closeLevelup()">やったぁ</button>
   </div>
 
   <script>
-    // ===== 状態管理 =====
-    const STEPS = ['1a', '1b', '1c', '1d', '2a', '2b', '2c'];
+    /* ===================================================
+       定数
+    =================================================== */
+    const STEPS = ['1a','1b','1c','1d','2a','2b','2c'];
     const STEP_NAMES = {
-      '1a': '原因洗い出し',
-      '1b': '仮説を立てる',
-      '1c': '分析計画',
-      '1d': '分析する',
-      '2a': 'アイデア出し',
-      '2b': '打手選択',
-      '2c': '実行プラン',
+      '1a':'原因洗い出し','1b':'仮説を立てる','1c':'分析計画',
+      '1d':'分析する','2a':'アイデア出し','2b':'打手選択','2c':'実行プラン'
     };
-
-    // XP・レベル設定
     const XP_PER_LEVEL = 100;
-    let state = {
-      currentStepIdx: 0,
-      xp: 0,
-      level: 1,
-      phase1Done: false,
-      phase2Done: false,
-    };
+    const STORAGE_KEY  = 'kasetukunn_quests';
+    const XP_KEY       = 'kasetukunn_xp';
 
-    // ===== 初期化 =====
-    function init() {
-      buildStepTrack();
-      // 各リストに初期アイテムを追加
-      ['1a', '1b', '1c', '2a', '2c'].forEach(id => {
-        addListItem('list-' + id, id);
-      });
-      updateUI();
+    /* ===================================================
+       グローバル状態
+    =================================================== */
+    // XP・レベルはクエスト横断で管理
+    let globalXP    = parseInt(localStorage.getItem(XP_KEY) || '0');
+    let globalLevel = Math.floor(globalXP / XP_PER_LEVEL) + 1;
+
+    // クエスト一覧と現在のクエストID
+    let quests        = loadAllQuests();
+    let activeQuestId = null;
+
+    // 現在クエストの揮発性状態（フォーム連動用）
+    let currentStepIdx = 0;
+
+    /* ===================================================
+       クエストデータ構造
+    =================================================== */
+    function newQuestData() {
+      return {
+        id:           Date.now().toString(),
+        title:        '',
+        createdAt:    Date.now(),
+        updatedAt:    Date.now(),
+        currentStepIdx: 0,
+        phase1Done:   false,
+        phase2Done:   false,
+        // リスト系（各ステップの入力値の配列）
+        lists: { '1a':[], '1b':[], '1c':[], '2a':[], '2c':[] },
+        // テキストエリア系
+        textareas: { '1d':'', 'conclusion-1d':'', 'reason-2b':'', 'deadline-2c':'' },
+        // 2b チェック状態
+        checks2b: {},
+      };
     }
 
-    // ===== 進捗バー構築 =====
+    /* ===================================================
+       localStorage I/O
+    =================================================== */
+    function loadAllQuests() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch(e) { return []; }
+    }
+
+    function saveAllQuests() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quests));
+    }
+
+    function saveGlobalXP() {
+      localStorage.setItem(XP_KEY, globalXP.toString());
+    }
+
+    /* ===================================================
+       現在のフォーム内容をクエストデータに書き戻す
+    =================================================== */
+    function captureCurrentQuest() {
+      const q = quests.find(q => q.id === activeQuestId);
+      if (!q) return;
+
+      q.title         = document.getElementById('questTitle').value;
+      q.currentStepIdx = currentStepIdx;
+
+      // リスト系
+      ['1a','1b','1c','2a','2c'].forEach(key => {
+        const list = document.getElementById('list-' + key);
+        if (!list) return;
+        q.lists[key] = Array.from(list.querySelectorAll('.list-input'))
+                            .map(el => el.value);
+      });
+
+      // テキストエリア系
+      ['1d','conclusion-1d','reason-2b'].forEach(key => {
+        const el = document.getElementById(key === '1d' ? 'textarea-1d' : (key === 'conclusion-1d' ? 'conclusion-1d' : 'reason-2b'));
+        if (el) q.textareas[key] = el.value;
+      });
+      const dl = document.getElementById('deadline-2c');
+      if (dl) q.textareas['deadline-2c'] = dl.value;
+
+      // 2b チェック
+      const checks = {};
+      document.querySelectorAll('#checklist-2b .checklist-item').forEach(item => {
+        checks[item.dataset.idx] = item.querySelector('.check-box').classList.contains('checked');
+      });
+      q.checks2b = checks;
+
+      q.updatedAt = Date.now();
+      saveAllQuests();
+    }
+
+    /* ===================================================
+       クエストをフォームへロード
+    =================================================== */
+    function loadQuestToForm(q) {
+      // タイトル
+      document.getElementById('questTitle').value = q.title;
+
+      // ステップ
+      currentStepIdx = q.currentStepIdx || 0;
+
+      // リスト系：いったんクリアして再構築
+      ['1a','1b','1c','2a','2c'].forEach(key => {
+        const list = document.getElementById('list-' + key);
+        if (!list) return;
+        list.innerHTML = '';
+        const values = q.lists[key] || [];
+        if (values.length === 0) {
+          // 空なら1行追加
+          addListItem('list-' + key, key, '');
+        } else {
+          values.forEach(v => addListItem('list-' + key, key, v));
+        }
+      });
+
+      // テキストエリア
+      const ta1d = document.getElementById('textarea-1d');
+      const conc = document.getElementById('conclusion-1d');
+      const rea  = document.getElementById('reason-2b');
+      const dl   = document.getElementById('deadline-2c');
+      if (ta1d) ta1d.value = q.textareas['1d'] || '';
+      if (conc) conc.value = q.textareas['conclusion-1d'] || '';
+      if (rea)  rea.value  = q.textareas['reason-2b'] || '';
+      if (dl)   dl.value   = q.textareas['deadline-2c'] || '';
+
+      // 2b チェック状態は sync2aTo2b でロードする
+      // ※ capturedChecks にセットしておいて sync 時に使う
+      pendingChecks2b = q.checks2b || {};
+    }
+
+    // 2b チェック状態のペンディング（ロード時）
+    let pendingChecks2b = {};
+
+    /* ===================================================
+       新規クエスト作成
+    =================================================== */
+    function createNewQuest() {
+      // 今開いているクエストを保存
+      if (activeQuestId) captureCurrentQuest();
+
+      const q = newQuestData();
+      quests.unshift(q);
+      saveAllQuests();
+
+      activateQuest(q.id);
+    }
+
+    /* ===================================================
+       クエストをアクティブにする
+    =================================================== */
+    function activateQuest(id) {
+      // 現在のクエストを保存
+      if (activeQuestId && activeQuestId !== id) captureCurrentQuest();
+
+      activeQuestId = id;
+      const q = quests.find(q => q.id === id);
+      if (!q) return;
+
+      loadQuestToForm(q);
+      buildStepTrack();
+      updateUI();
+      renderSidebar();
+
+      // メインエリアをトップへ
+      document.getElementById('mainArea').scrollTop = 0;
+    }
+
+    /* ===================================================
+       クエスト削除
+    =================================================== */
+    function deleteQuest(id, event) {
+      event.stopPropagation(); // カード選択を防ぐ
+      if (!confirm('このクエストを消す？')) return;
+
+      quests = quests.filter(q => q.id !== id);
+      saveAllQuests();
+
+      if (activeQuestId === id) {
+        // 残ったクエストがあれば先頭を選択、なければ新規
+        if (quests.length > 0) {
+          activateQuest(quests[0].id);
+        } else {
+          activeQuestId = null;
+          createNewQuest();
+        }
+      } else {
+        renderSidebar();
+      }
+    }
+
+    /* ===================================================
+       サイドバー描画
+    =================================================== */
+    function renderSidebar() {
+      const list = document.getElementById('questList');
+      list.innerHTML = '';
+
+      if (quests.length === 0) {
+        list.innerHTML = '<p style="font-family:\'Caveat\',cursive;font-size:0.9rem;color:var(--ink-light);padding:12px 4px;">まだクエストがないよ。上のボタンから作ってみよ！</p>';
+        return;
+      }
+
+      quests.forEach(q => {
+        const isActive = q.id === activeQuestId;
+        const card = document.createElement('div');
+        card.className = 'quest-item' + (isActive ? ' active' : '');
+        card.onclick = () => activateQuest(q.id);
+
+        // タイトル
+        const titleText = q.title || '（タイトルなし）';
+        const titleClass = q.title ? 'quest-item-title' : 'quest-item-title empty';
+
+        // 日付
+        const date = new Date(q.updatedAt);
+        const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
+
+        card.innerHTML = `
+          <div class="quest-item-top">
+            <span class="${titleClass}">${escapeHtml(titleText)}</span>
+            <button class="btn-quest-delete" onclick="deleteQuest('${q.id}', event)" title="削除">×</button>
+          </div>
+          <div class="quest-progress" id="qprog-${q.id}"></div>
+          <div class="quest-item-date">${dateStr}</div>
+        `;
+        list.appendChild(card);
+
+        // 進捗ドット描画
+        renderQuestProgress(q, card.querySelector('#qprog-' + q.id));
+      });
+    }
+
+    /* ===================================================
+       サイドバーの進捗ドット描画
+    =================================================== */
+    function renderQuestProgress(q, container) {
+      container.innerHTML = '';
+      const stepIdx = q.currentStepIdx || 0;
+
+      STEPS.forEach((step, i) => {
+        // Phase 1→2 の境目に区切り線
+        if (i === 4) {
+          const sep = document.createElement('div');
+          sep.className = 'progress-phase-sep';
+          container.appendChild(sep);
+        }
+
+        const dot = document.createElement('div');
+        let cls = 'progress-dot';
+
+        if (i < stepIdx) {
+          cls += ' done';
+          dot.textContent = '✓';
+        } else if (i === stepIdx && !q.phase2Done) {
+          cls += ' current';
+          dot.textContent = step;
+        } else if (q.phase2Done) {
+          // 全完了
+          cls += ' done';
+          dot.textContent = '✓';
+        } else {
+          dot.textContent = step;
+        }
+
+        dot.className = cls;
+        dot.title = STEP_NAMES[step];
+        container.appendChild(dot);
+      });
+
+      // 完了バッジ
+      if (q.phase2Done) {
+        const badge = document.createElement('span');
+        badge.className = 'quest-done-badge';
+        badge.textContent = 'DONE';
+        container.appendChild(badge);
+      }
+    }
+
+    /* ===================================================
+       サイドバー開閉
+    =================================================== */
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    /* ===================================================
+       ステップトラック構築
+    =================================================== */
     function buildStepTrack() {
       const track = document.getElementById('stepTrack');
+      track.innerHTML = '';
       STEPS.forEach((step, i) => {
-        // ノード
         const node = document.createElement('div');
         node.className = 'step-node';
         node.id = 'node-' + step;
-        node.innerHTML = `
-          <div class="step-dot">${step}</div>
-          <span class="step-label">${STEP_NAMES[step]}</span>
-        `;
+        node.innerHTML = `<div class="step-dot">${step}</div><span class="step-label">${STEP_NAMES[step]}</span>`;
         node.onclick = () => goToStep(i);
         track.appendChild(node);
-
-        // 線（最後以外）
         if (i < STEPS.length - 1) {
           const line = document.createElement('div');
           line.className = 'step-line';
@@ -1141,80 +1422,74 @@
       });
     }
 
-    // ===== UI更新 =====
+    /* ===================================================
+       UI 更新
+    =================================================== */
     function updateUI() {
-      // ステップの表示制御
+      const q = quests.find(q => q.id === activeQuestId);
+
+      // ステップ表示
       STEPS.forEach((step, i) => {
-        const sec = document.getElementById('step-' + step);
+        const sec  = document.getElementById('step-' + step);
         const node = document.getElementById('node-' + step);
         if (!sec || !node) return;
 
-        if (i === state.currentStepIdx) {
+        if (i === currentStepIdx) {
           sec.classList.add('visible');
           node.classList.add('active');
           node.classList.remove('done');
-          // アクティブカードをハイライト
           const card = document.getElementById('card-' + step);
           if (card) card.classList.add('active-step');
-        } else if (i < state.currentStepIdx) {
+        } else if (i < currentStepIdx) {
           sec.classList.add('visible');
           node.classList.remove('active');
           node.classList.add('done');
           const card = document.getElementById('card-' + step);
-          if (card) {
-            card.classList.remove('active-step');
-            card.classList.add('done-step');
-          }
+          if (card) { card.classList.remove('active-step'); card.classList.add('done-step'); }
         } else {
           sec.classList.remove('visible');
-          node.classList.remove('active', 'done');
+          node.classList.remove('active','done');
+          const card = document.getElementById('card-' + step);
+          if (card) { card.classList.remove('active-step','done-step'); }
         }
       });
 
-      // Phase 2 関連の表示
-      const showPhase2 = state.currentStepIdx >= 4;
-      document.getElementById('phase2Divider').style.display = showPhase2 ? '' : 'none';
-      document.getElementById('phase2Header').style.display = showPhase2 ? 'flex' : 'none';
+      // Phase 2 表示
+      const showP2 = currentStepIdx >= 4;
+      document.getElementById('phase2Divider').style.display = showP2 ? '' : 'none';
+      document.getElementById('phase2Header').style.display  = showP2 ? 'flex' : 'none';
 
       // Phase 完了ボタン
-      const ph1Btn = document.getElementById('phase1-complete-btn');
-      const ph2Btn = document.getElementById('phase2-complete-btn');
-      ph1Btn.classList.toggle('visible', state.currentStepIdx === 3 && !state.phase1Done);
-      ph2Btn.classList.toggle('visible', state.currentStepIdx === 6 && !state.phase2Done);
+      const ph1Done = q ? q.phase1Done : false;
+      const ph2Done = q ? q.phase2Done : false;
+      document.getElementById('phase1-complete-btn').classList.toggle('visible', currentStepIdx === 3 && !ph1Done);
+      document.getElementById('phase2-complete-btn').classList.toggle('visible', currentStepIdx === 6 && !ph2Done);
 
       // ナビボタン
-      const btnPrev = document.getElementById('btnPrev');
-      const btnNext = document.getElementById('btnNext');
-      btnPrev.style.visibility = state.currentStepIdx === 0 ? 'hidden' : 'visible';
+      document.getElementById('btnPrev').style.visibility = currentStepIdx === 0 ? 'hidden' : 'visible';
+      document.getElementById('btnNext').style.display    = currentStepIdx >= STEPS.length - 1 ? 'none' : '';
 
-      if (state.currentStepIdx >= STEPS.length - 1) {
-        btnNext.style.display = 'none';
-      } else {
-        btnNext.style.display = '';
-      }
+      // XPバー
+      const xpInLevel = globalXP % XP_PER_LEVEL;
+      document.getElementById('xpBar').style.width       = (xpInLevel / XP_PER_LEVEL * 100) + '%';
+      document.getElementById('xpCurrent').textContent   = xpInLevel;
+      document.getElementById('xpMax').textContent       = XP_PER_LEVEL;
+      document.getElementById('levelDisp').textContent   = globalLevel;
 
-      // XPバー更新
-      const xpInLevel = state.xp % XP_PER_LEVEL;
-      const pct = (xpInLevel / XP_PER_LEVEL) * 100;
-      document.getElementById('xpBar').style.width = pct + '%';
-      document.getElementById('xpCurrent').textContent = xpInLevel;
-      document.getElementById('xpMax').textContent = XP_PER_LEVEL;
-      document.getElementById('levelDisp').textContent = state.level;
-
-      // 2b のチェックリストを2aから同期
       sync2aTo2b();
     }
 
-    // ===== 2a → 2b 同期 =====
+    /* ===================================================
+       2a → 2b 同期
+    =================================================== */
     function sync2aTo2b() {
-      const list2a = document.getElementById('list-2a');
+      const list2a    = document.getElementById('list-2a');
       const checklist = document.getElementById('checklist-2b');
       if (!list2a || !checklist) return;
 
       const inputs = list2a.querySelectorAll('.list-input');
-      if (inputs.length === 0) return;
 
-      // 既存のチェックリストアイテムを保持
+      // 既存チェック状態を保持
       const existing = {};
       checklist.querySelectorAll('.checklist-item').forEach(item => {
         existing[item.dataset.idx] = item.querySelector('.check-box').classList.contains('checked');
@@ -1228,60 +1503,53 @@
         if (!text) return;
         hasContent = true;
 
+        // pendingChecks2b（ロード時）か existing（入力中）を使う
+        const checked = (existing[i] !== undefined) ? existing[i]
+                      : (pendingChecks2b[i] || false);
+
         const item = document.createElement('div');
         item.className = 'checklist-item';
         item.dataset.idx = i;
-
-        const checked = existing[i] || false;
         item.innerHTML = `
-          <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(this)">
-            ${checked ? '✓' : ''}
-          </div>
+          <div class="check-box ${checked ? 'checked' : ''}" onclick="toggleCheck(this)">${checked ? '✓' : ''}</div>
           <span class="check-label">${escapeHtml(text)}</span>
         `;
         checklist.appendChild(item);
       });
 
       if (!hasContent) {
-        checklist.innerHTML = '<span style="font-size:0.88rem; color:var(--ink-light); font-family:\'Caveat\',cursive;">2a でアイデアを書くと自動でここに出てくるよ</span>';
+        checklist.innerHTML = '<span style="font-size:0.86rem;color:var(--ink-light);font-family:\'Caveat\',cursive;">2a でアイデアを書くと自動でここに出てくるよ</span>';
       }
+
+      // ロード後は pendingChecks2b をクリア
+      pendingChecks2b = {};
     }
 
-    // ===== チェックボックス toggle =====
     function toggleCheck(el) {
       const isChecked = el.classList.toggle('checked');
       el.textContent = isChecked ? '✓' : '';
     }
 
-    // ===== HTMLエスケープ =====
-    function escapeHtml(str) {
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // ===== リストアイテム追加 =====
-    function addListItem(listId, stepId) {
+    /* ===================================================
+       リストアイテム追加
+    =================================================== */
+    function addListItem(listId, stepId, value) {
       const list = document.getElementById(listId);
       if (!list) return;
 
-      const item = document.createElement('div');
+      const item   = document.createElement('div');
       item.className = 'list-item';
 
       const bullet = document.createElement('div');
       bullet.className = 'list-bullet';
 
-      const input = document.createElement('input');
-      input.type = 'text';
+      const input  = document.createElement('input');
+      input.type   = 'text';
       input.className = 'list-input';
       input.placeholder = '書いてみよ…';
+      if (value !== undefined) input.value = value;
 
-      // 2a の入力変更時に2bを同期
-      if (stepId === '2a') {
-        input.addEventListener('input', sync2aTo2b);
-      }
+      if (stepId === '2a') input.addEventListener('input', sync2aTo2b);
 
       const removeBtn = document.createElement('button');
       removeBtn.className = 'btn-remove';
@@ -1296,94 +1564,123 @@
       item.appendChild(removeBtn);
       list.appendChild(item);
 
-      input.focus();
+      // 新規追加（valueなし）の場合だけフォーカス
+      if (value === undefined) input.focus();
     }
 
-    // ===== ステップ移動 =====
+    /* ===================================================
+       ステップ移動
+    =================================================== */
     function nextStep() {
-      if (state.currentStepIdx < STEPS.length - 1) {
-        state.currentStepIdx++;
+      if (currentStepIdx < STEPS.length - 1) {
+        currentStepIdx++;
+        updateCurrentStepInQuest();
         updateUI();
-        window.scrollTo({ top: 200, behavior: 'smooth' });
+        document.getElementById('mainArea').scrollTop = 180;
       }
     }
 
     function prevStep() {
-      if (state.currentStepIdx > 0) {
-        state.currentStepIdx--;
+      if (currentStepIdx > 0) {
+        currentStepIdx--;
+        updateCurrentStepInQuest();
         updateUI();
-        window.scrollTo({ top: 200, behavior: 'smooth' });
+        document.getElementById('mainArea').scrollTop = 180;
       }
     }
 
     function goToStep(idx) {
-      // 前のステップまでしか飛べないようにする（ゆるく）
-      if (idx <= state.currentStepIdx) {
-        state.currentStepIdx = idx;
+      if (idx <= currentStepIdx) {
+        currentStepIdx = idx;
+        updateCurrentStepInQuest();
         updateUI();
       }
     }
 
-    // ===== Phase 完了処理 =====
+    function updateCurrentStepInQuest() {
+      const q = quests.find(q => q.id === activeQuestId);
+      if (q) {
+        q.currentStepIdx = currentStepIdx;
+        saveAllQuests();
+        renderSidebar();
+      }
+    }
+
+    /* ===================================================
+       タイトル変更
+    =================================================== */
+    function onTitleChange() {
+      const q = quests.find(q => q.id === activeQuestId);
+      if (q) {
+        q.title = document.getElementById('questTitle').value;
+        q.updatedAt = Date.now();
+        saveAllQuests();
+        // サイドバーのタイトルだけ即更新
+        renderSidebar();
+      }
+    }
+
+    /* ===================================================
+       Phase 完了
+    =================================================== */
     function completePhase(phase) {
+      const q = quests.find(q => q.id === activeQuestId);
+      if (!q) return;
+
       if (phase === 1) {
-        state.phase1Done = true;
+        q.phase1Done = true;
         showXpPopup(50, 'Phase 1 クリア！', 'おっ、進んでる進んでる。原因、わかってきたじゃん');
         gainXP(50);
-        // Phase 2 へ移行
-        setTimeout(() => {
-          state.currentStepIdx = 4;
-          updateUI();
-        }, 100);
-      } else if (phase === 2) {
-        state.phase2Done = true;
+        setTimeout(() => { currentStepIdx = 4; updateCurrentStepInQuest(); updateUI(); }, 100);
+      } else {
+        q.phase2Done = true;
         showXpPopup(80, 'クエスト完了！', 'やりきった！えらい。本当にえらい。');
         gainXP(80);
-        // 口をhappyに
         setMouth('happy');
       }
+      saveAllQuests();
+      renderSidebar();
     }
 
-    // ===== XP獲得 =====
+    /* ===================================================
+       XP
+    =================================================== */
     function gainXP(amount) {
-      const oldLevel = state.level;
-      state.xp += amount;
-      state.level = Math.floor(state.xp / XP_PER_LEVEL) + 1;
-
+      const oldLevel = globalLevel;
+      globalXP   += amount;
+      globalLevel = Math.floor(globalXP / XP_PER_LEVEL) + 1;
+      saveGlobalXP();
       updateUI();
-
-      if (state.level > oldLevel) {
-        setTimeout(() => showLevelUp(state.level), 1200);
-      }
+      if (globalLevel > oldLevel) setTimeout(() => showLevelUp(globalLevel), 1200);
     }
 
-    // ===== XPポップアップ =====
+    /* ===================================================
+       ポップアップ
+    =================================================== */
     function showXpPopup(xp, title, msg) {
       document.getElementById('popupTitle').textContent = title;
-      document.getElementById('popupXP').textContent = '+' + xp + ' XP';
-      document.getElementById('popupMsg').textContent = msg;
+      document.getElementById('popupXP').textContent    = '+' + xp + ' XP';
+      document.getElementById('popupMsg').textContent   = msg;
       document.getElementById('xpPopup').classList.add('show');
       document.getElementById('overlay').classList.add('show');
     }
-
     function closePopup() {
       document.getElementById('xpPopup').classList.remove('show');
       document.getElementById('overlay').classList.remove('show');
     }
-
-    // ===== レベルアップポップアップ =====
     function showLevelUp(level) {
       document.getElementById('newLevel').textContent = level;
       document.getElementById('levelupPopup').classList.add('show');
       document.getElementById('overlay').classList.add('show');
     }
-
     function closeLevelup() {
       document.getElementById('levelupPopup').classList.remove('show');
       document.getElementById('overlay').classList.remove('show');
     }
 
-    // ===== カセツくんのアドバイス =====
+    /* ===================================================
+       カセツくんアドバイス
+    =================================================== */
     const ADVICE = [
       'わかんないけど、とりあえず書いてみよ。最初はそれでいい。',
       'おっ、進んでる進んでる。いいじゃん。',
@@ -1399,25 +1696,47 @@
     function nextAdvice() {
       adviceIdx = (adviceIdx + 1) % ADVICE.length;
       document.getElementById('adviceText').textContent = ADVICE[adviceIdx];
-      // 表情をランダムに変える
-      const moods = ['normal', 'happy', 'hmm'];
+      const moods = ['normal','happy'];
       setMouth(moods[Math.floor(Math.random() * moods.length)]);
     }
 
-    // ===== 口の形を変える =====
     function setMouth(type) {
       const mouth = document.getElementById('kMouth');
-      mouth.className = '';
-      if (type === 'happy') {
-        mouth.className = 'k-mouth-happy';
-      } else if (type === 'hmm') {
-        mouth.className = 'k-mouth-hmm';
+      mouth.className = type === 'happy' ? 'k-mouth-happy' : type === 'hmm' ? 'k-mouth-hmm' : 'k-mouth';
+    }
+
+    /* ===================================================
+       ユーティリティ
+    =================================================== */
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ===================================================
+       定期自動保存（30秒ごと）
+    =================================================== */
+    setInterval(() => { if (activeQuestId) captureCurrentQuest(); }, 30000);
+
+    /* ===================================================
+       起動
+    =================================================== */
+    function init() {
+      buildStepTrack();
+
+      if (quests.length === 0) {
+        // はじめての起動：新規クエストを作成
+        const q = newQuestData();
+        quests.push(q);
+        saveAllQuests();
+        activateQuest(q.id);
       } else {
-        mouth.className = 'k-mouth';
+        // 直近のクエストを開く
+        activateQuest(quests[0].id);
       }
     }
 
-    // ===== 起動 =====
     init();
   </script>
 </body>
