@@ -865,6 +865,277 @@
     ::-webkit-scrollbar-track { background: var(--cream-dark); }
     ::-webkit-scrollbar-thumb { background: var(--ink-light); border-radius: 2px; }
 
+    /* ===== 認証画面 ===== */
+    .auth-fullscreen {
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      background-image:
+        linear-gradient(rgba(45,42,32,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,42,32,0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: var(--cream);
+      border: 3px solid var(--border);
+      border-radius: 6px 12px 10px 6px;
+      box-shadow: 8px 8px 0 var(--border);
+      padding: 32px 36px 28px;
+      width: min(420px, 92vw);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transform: rotate(-0.4deg);
+    }
+
+    /* ログイン画面のキャラ */
+    .login-char-area {
+      position: relative;
+      width: 64px;
+      height: 80px;
+      flex-shrink: 0;
+      animation: float 3s ease-in-out infinite;
+      margin-bottom: 2px;
+    }
+    .login-k-head {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 48px; height: 46px;
+      background: var(--cream-dark);
+      border: 2px solid var(--border);
+      border-radius: 50% 52% 48% 50% / 48% 50% 52% 50%;
+      box-shadow: var(--shadow-sm);
+    }
+    .login-k-eye-l, .login-k-eye-r {
+      position: absolute;
+      width: 7px; height: 7px;
+      background: var(--border);
+      border-radius: 50%;
+      top: 16px;
+    }
+    .login-k-eye-l { left: 10px; }
+    .login-k-eye-r { right: 10px; }
+    .login-k-mouth {
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      width: 18px; height: 8px;
+      border: 2px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+    }
+    .login-k-neck {
+      position: absolute;
+      top: 43px; left: 50%;
+      transform: translateX(-50%);
+      width: 12px; height: 8px;
+      background: var(--cream-dark);
+      border-left: 2px solid var(--border);
+      border-right: 2px solid var(--border);
+    }
+    .login-k-torso {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 36px; height: 32px;
+      background: var(--blue);
+      border: 2px solid var(--border);
+      border-radius: 4px 6px 3px 5px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .login-title {
+      font-family: 'Caveat', cursive;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .login-sub {
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: var(--ink-light);
+      margin-bottom: 4px;
+    }
+
+    .auth-error {
+      width: 100%;
+      background: #fce8e5;
+      border: 2px solid var(--red);
+      border-radius: 3px;
+      padding: 7px 10px;
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: var(--red);
+    }
+    .auth-message {
+      width: 100%;
+      background: #e8f5e9;
+      border: 2px solid var(--green);
+      border-radius: 3px;
+      padding: 7px 10px;
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: var(--green);
+    }
+
+    .auth-input {
+      width: 100%;
+      font-family: 'Zen Kurenaido', sans-serif;
+      font-size: 1rem;
+      border: 2px solid var(--border);
+      border-radius: 3px 5px 4px 3px;
+      background: var(--cream);
+      padding: 9px 12px;
+      color: var(--ink);
+      outline: none;
+      box-shadow: var(--shadow-sm);
+    }
+    .auth-input:focus { border-color: var(--orange); }
+
+    .btn-auth-primary {
+      width: 100%;
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 10px;
+      border: 2px solid var(--border);
+      background: var(--yellow);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border-radius: 3px 6px 4px 3px;
+      transform: rotate(-0.5deg);
+      transition: transform 0.15s;
+      color: var(--ink);
+      margin-top: 2px;
+    }
+    .btn-auth-primary:hover  { transform: rotate(-1.5deg) scale(1.03); }
+    .btn-auth-primary:active { transform: scale(0.94); box-shadow: 1px 1px 0 var(--border); }
+    .btn-auth-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-auth-google {
+      width: 100%;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 9px;
+      border: 2px solid var(--border);
+      background: var(--cream-dark);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border-radius: 3px 6px 4px 3px;
+      transform: rotate(0.3deg);
+      transition: transform 0.15s;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-auth-google:hover  { transform: rotate(1deg) scale(1.02); }
+    .btn-auth-google:active { transform: scale(0.94); }
+    .auth-google-icon {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: white;
+      border: 1.5px solid var(--border);
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .auth-divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ink-light);
+      opacity: 0.3;
+    }
+
+    .auth-mode-switch {
+      font-family: 'Caveat', cursive;
+      font-size: 0.92rem;
+      color: var(--ink-light);
+      text-align: center;
+    }
+    .auth-mode-switch a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .auth-mode-switch a:hover { text-decoration: underline; }
+
+    /* ローディング */
+    .loading-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 4px solid var(--cream-mid);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--ink-light);
+    }
+
+    /* ===== ヘッダー ユーザーエリア ===== */
+    .user-area {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-email {
+      font-family: 'Caveat', cursive;
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btn-logout {
+      font-family: 'Caveat', cursive;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border: 2px solid var(--border);
+      background: var(--cream);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border-radius: 3px 5px 4px 3px;
+      color: var(--ink-light);
+      transition: transform 0.15s, color 0.15s;
+    }
+    .btn-logout:hover { transform: rotate(-1deg); color: var(--red); }
   </style>
 </head>
 <body>
@@ -889,7 +1160,57 @@
       </div>
       <div class="level-badge">Lv.<span id="levelDisp">1</span></div>
     </div>
+    <div class="user-area" id="userArea" style="display:none;">
+      <span class="user-email" id="userEmail"></span>
+      <button class="btn-logout" onclick="logoutUser()">ログアウト</button>
+    </div>
   </header>
+
+  <!-- ===== ローディング画面 ===== -->
+  <div class="auth-fullscreen" id="loadingScreen">
+    <div class="loading-card">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">データを読み込み中…</p>
+    </div>
+  </div>
+
+  <!-- ===== ログイン画面 ===== -->
+  <div class="auth-fullscreen" id="loginScreen" style="display:none;">
+    <div class="login-card">
+      <!-- カセツくん -->
+      <div class="login-char-area">
+        <div class="login-k-neck"></div>
+        <div class="login-k-head">
+          <div class="login-k-eye-l"></div>
+          <div class="login-k-eye-r"></div>
+          <div class="login-k-mouth"></div>
+        </div>
+        <div class="login-k-torso"></div>
+      </div>
+      <div class="login-title" id="authModeTitle">ログイン</div>
+      <div class="login-sub">データをクラウドに保存してどこでも使えるよ</div>
+
+      <div class="auth-error"   id="authError"   style="display:none;"></div>
+      <div class="auth-message" id="authMessage" style="display:none;"></div>
+
+      <input type="email"    id="authEmail"    class="auth-input" placeholder="メールアドレス">
+      <input type="password" id="authPassword" class="auth-input" placeholder="パスワード"
+             onkeydown="if(event.key==='Enter') submitAuth()">
+
+      <button id="btnSubmitAuth" class="btn-auth-primary" onclick="submitAuth()">ログイン</button>
+
+      <div class="auth-divider">または</div>
+
+      <button class="btn-auth-google" onclick="loginWithGoogle()">
+        <span class="auth-google-icon">G</span>
+        Googleでログイン
+      </button>
+
+      <div class="auth-mode-switch" id="authModeSwitch">
+        アカウントがない？ <a href="#" onclick="event.preventDefault();toggleAuthMode()">新規登録</a>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== アプリ本体 ===== -->
   <div class="app-body">
@@ -997,9 +1318,11 @@
             </div>
             <span class="list-label">調べた結果・わかったこと</span>
             <textarea class="step-textarea" id="textarea-1d"
+                      oninput="debouncedSave()"
                       placeholder="調べてみたら……こんなことがわかった。"></textarea>
             <span class="list-label" style="margin-top:12px;display:block;">結論：原因はこれだ</span>
             <textarea class="step-textarea" id="conclusion-1d" style="min-height:60px;"
+                      oninput="debouncedSave()"
                       placeholder="結局、一番の原因は……"></textarea>
           </div>
         </div>
@@ -1051,6 +1374,7 @@
             </div>
             <span class="list-label" style="margin-top:12px;display:block;">選んだ理由</span>
             <textarea class="step-textarea" id="reason-2b" style="min-height:60px;"
+                      oninput="debouncedSave()"
                       placeholder="この打手にしたのは……"></textarea>
           </div>
         </div>
@@ -1067,7 +1391,7 @@
             <div class="dynamic-list" id="list-2c"></div>
             <button class="btn-add" onclick="addListItem('list-2c','2c')">＋ アクションを追加</button>
             <span class="list-label" style="margin-top:12px;display:block;">期限</span>
-            <input type="date" id="deadline-2c" style="
+            <input type="date" id="deadline-2c" onchange="debouncedSave()" style="
               border:2px solid var(--border);background:var(--cream);
               padding:6px 10px;font-family:'Caveat',cursive;font-size:1rem;
               border-radius:3px;box-shadow:var(--shadow-sm);
@@ -1139,11 +1463,14 @@
     let globalLevel = Math.floor(globalXP / XP_PER_LEVEL) + 1;
 
     // クエスト一覧と現在のクエストID
-    let quests        = loadAllQuests();
+    let quests        = [];
     let activeQuestId = null;
 
     // 現在クエストの揮発性状態（フォーム連動用）
     let currentStepIdx = 0;
+
+    // Supabase 認証ユーザー（未ログイン時は null）
+    let currentUser = null;
 
     /* ===================================================
        クエストデータ構造
@@ -1178,10 +1505,12 @@
 
     function saveAllQuests() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(quests));
+      if (currentUser) debouncedQuestSync();
     }
 
     function saveGlobalXP() {
       localStorage.setItem(XP_KEY, globalXP.toString());
+      if (currentUser) syncXPToSupabase();
     }
 
     /* ===================================================
@@ -1306,6 +1635,10 @@
 
       quests = quests.filter(q => q.id !== id);
       saveAllQuests();
+      if (currentUser) {
+        supabaseClient.from('quests').delete().eq('id', id)
+          .then(({ error }) => { if (error) console.error('Supabase delete error:', error); });
+      }
 
       if (activeQuestId === id) {
         // 残ったクエストがあれば先頭を選択、なければ新規
@@ -1541,6 +1874,7 @@
     function toggleCheck(el) {
       const isChecked = el.classList.toggle('checked');
       el.textContent = isChecked ? '✓' : '';
+      if (activeQuestId) captureCurrentQuest();
     }
 
     /* ===================================================
@@ -1563,6 +1897,7 @@
       if (value !== undefined) input.value = value;
 
       if (stepId === '2a') input.addEventListener('input', sync2aTo2b);
+      input.addEventListener('input', debouncedSave);
 
       const removeBtn = document.createElement('button');
       removeBtn.className = 'btn-remove';
@@ -1733,6 +2068,264 @@
     setInterval(() => { if (activeQuestId) captureCurrentQuest(); }, 30000);
 
     /* ===================================================
+       Supabase 設定
+    =================================================== */
+    const SUPABASE_URL      = 'https://krupiqtgxzoecsnrnuxv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtydXBpcXRneHpvZWNzbnJudXh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODQ2OTMsImV4cCI6MjA4NzE2MDY5M30.LDkiW4d1xZg8wiGZQiXurxWQatS3hziJt8_PhT-xtKE';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /*
+      ── Supabase SQL セットアップ（ダッシュボードの SQL Editor で初回のみ実行）──
+
+      create table quests (
+        id text primary key,
+        user_id uuid references auth.users(id) on delete cascade not null,
+        title text default '',
+        data jsonb not null default '{}',
+        created_at timestamptz default now(),
+        updated_at timestamptz default now()
+      );
+
+      create table user_xp (
+        user_id uuid references auth.users(id) on delete cascade primary key,
+        xp integer default 0,
+        updated_at timestamptz default now()
+      );
+
+      alter table quests  enable row level security;
+      alter table user_xp enable row level security;
+
+      create policy "own quests" on quests for all
+        using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+      create policy "own xp" on user_xp for all
+        using (auth.uid() = user_id) with check (auth.uid() = user_id);
+    */
+
+    /* ===================================================
+       認証初期化
+    =================================================== */
+    let appInitialized = false;
+
+    async function initAuth() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+
+      supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && !appInitialized) {
+          currentUser = session.user;
+          await onLogin();
+        } else if (event === 'SIGNED_OUT') {
+          appInitialized = false;
+          currentUser = null;
+          onLogout();
+        }
+      });
+
+      if (session) {
+        currentUser = session.user;
+        try {
+          await onLogin();
+        } catch (e) {
+          console.error('onLogin error:', e);
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('loginScreen').style.display = 'flex';
+        }
+      } else {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+      }
+    }
+
+    async function onLogin() {
+      appInitialized = true;
+      updateUserArea();
+      await loadQuestsFromSupabase();
+      await loadXPFromSupabase();
+
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('userArea').style.display = 'flex';
+
+      init();
+    }
+
+    function onLogout() {
+      quests        = [];
+      globalXP      = 0;
+      globalLevel   = 1;
+      activeQuestId = null;
+
+      document.getElementById('userArea').style.display    = 'none';
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display  = 'flex';
+    }
+
+    /* ===================================================
+       Auth UI
+    =================================================== */
+    let authMode = 'login'; // 'login' | 'signup'
+
+    function toggleAuthMode() {
+      authMode = authMode === 'login' ? 'signup' : 'login';
+      document.getElementById('authModeTitle').textContent  = authMode === 'login' ? 'ログイン' : '新規登録';
+      document.getElementById('btnSubmitAuth').textContent  = authMode === 'login' ? 'ログイン' : '登録する';
+      const sw = document.getElementById('authModeSwitch');
+      sw.innerHTML = authMode === 'login'
+        ? 'アカウントがない？ <a href="#" onclick="event.preventDefault();toggleAuthMode()">新規登録</a>'
+        : 'すでにアカウントがある？ <a href="#" onclick="event.preventDefault();toggleAuthMode()">ログイン</a>';
+      document.getElementById('authError').style.display   = 'none';
+      document.getElementById('authMessage').style.display = 'none';
+    }
+
+    async function submitAuth() {
+      const email    = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+
+      if (!email || !password) {
+        showAuthError('メールアドレスとパスワードを入力してください');
+        return;
+      }
+
+      setAuthLoading(true);
+
+      if (authMode === 'login') {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthError('ログインに失敗しました: ' + error.message);
+          setAuthLoading(false);
+        }
+      } else {
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) {
+          showAuthError('登録に失敗しました: ' + error.message);
+          setAuthLoading(false);
+        } else {
+          showAuthMessage('確認メールを送りました！確認してからログインしてね。');
+          setAuthLoading(false);
+        }
+      }
+    }
+
+    async function loginWithGoogle() {
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options:  { redirectTo: window.location.origin + window.location.pathname }
+      });
+      if (error) showAuthError('Googleログインに失敗しました');
+    }
+
+    async function logoutUser() {
+      await supabaseClient.auth.signOut();
+    }
+
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('authMessage').style.display = 'none';
+    }
+
+    function showAuthMessage(msg) {
+      const el = document.getElementById('authMessage');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('authError').style.display = 'none';
+    }
+
+    function setAuthLoading(loading) {
+      const btn = document.getElementById('btnSubmitAuth');
+      btn.disabled    = loading;
+      btn.textContent = loading ? '...' : (authMode === 'login' ? 'ログイン' : '登録する');
+    }
+
+    function updateUserArea() {
+      if (currentUser) {
+        document.getElementById('userEmail').textContent = currentUser.email || 'ユーザー';
+      }
+    }
+
+    /* ===================================================
+       Supabase データ読み込み
+    =================================================== */
+    async function loadQuestsFromSupabase() {
+      const { data, error } = await supabaseClient
+        .from('quests')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase load error:', error);
+        quests = loadAllQuests(); // フォールバック
+        return;
+      }
+
+      if (data && data.length > 0) {
+        quests = data.map(row => ({ ...row.data, id: row.id, title: row.title }));
+      } else {
+        // Supabase にデータなし → localStorage から移行
+        quests = loadAllQuests();
+        if (quests.length > 0) await syncQuestsToSupabase();
+      }
+    }
+
+    async function loadXPFromSupabase() {
+      const { data, error } = await supabaseClient
+        .from('user_xp')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      if (error || !data) {
+        const stored = localStorage.getItem(XP_KEY);
+        globalXP = stored ? parseInt(stored, 10) : 0;
+      } else {
+        globalXP = data.xp || 0;
+      }
+      globalLevel = Math.floor(globalXP / XP_PER_LEVEL) + 1;
+    }
+
+    /* ===================================================
+       Supabase データ同期
+    =================================================== */
+    async function syncQuestsToSupabase() {
+      if (!currentUser) return;
+      const rows = quests.map(q => ({
+        id:         q.id,
+        user_id:    currentUser.id,
+        title:      q.title || '',
+        data:       q,
+        updated_at: new Date().toISOString()
+      }));
+      const { error } = await supabaseClient.from('quests').upsert(rows, { onConflict: 'id' });
+      if (error) console.error('Supabase sync error:', error);
+    }
+
+    let syncTimer = null;
+    let saveDebounceTimer = null;
+
+    function debouncedQuestSync() {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(syncQuestsToSupabase, 1000);
+    }
+
+    function debouncedSave() {
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(() => {
+        if (activeQuestId) captureCurrentQuest();
+      }, 500);
+    }
+
+    async function syncXPToSupabase() {
+      if (!currentUser) return;
+      const { error } = await supabaseClient.from('user_xp').upsert({
+        user_id:    currentUser.id,
+        xp:         globalXP,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      if (error) console.error('Supabase XP sync error:', error);
+    }
+
+    /* ===================================================
        起動
     =================================================== */
     function init() {
@@ -1750,7 +2343,7 @@
       }
     }
 
-    init();
+    initAuth();
 
   </script>
 </body>
