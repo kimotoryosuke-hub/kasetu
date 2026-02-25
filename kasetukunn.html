@@ -2251,20 +2251,20 @@
       const { data, error } = await supabaseClient
         .from('quests')
         .select('*')
+        .eq('user_id', currentUser.id)
         .order('updated_at', { ascending: false });
 
       if (error) {
         console.error('Supabase load error:', error);
-        quests = loadAllQuests(); // フォールバック
+        quests = []; // エラー時は空にする（他ユーザーのデータが混入しないよう）
         return;
       }
 
       if (data && data.length > 0) {
         quests = data.map(row => ({ ...row.data, id: row.id, title: row.title }));
       } else {
-        // Supabase にデータなし → localStorage から移行
-        quests = loadAllQuests();
-        if (quests.length > 0) await syncQuestsToSupabase();
+        // Supabase にデータなし → このユーザーは新規なので空で開始
+        quests = [];
       }
     }
 
@@ -2276,8 +2276,7 @@
         .single();
 
       if (error || !data) {
-        const stored = localStorage.getItem(XP_KEY);
-        globalXP = stored ? parseInt(stored, 10) : 0;
+        globalXP = 0; // このユーザーのXPがない場合は0から開始
       } else {
         globalXP = data.xp || 0;
       }
