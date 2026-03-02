@@ -881,6 +881,7 @@
     }
 
     .login-card {
+      position: relative;
       background: var(--cream);
       border: 3px solid var(--border);
       border-radius: 6px 12px 10px 6px;
@@ -893,6 +894,35 @@
       gap: 10px;
       transform: rotate(-0.4deg);
     }
+    .btn-close-login {
+      position: absolute;
+      top: 10px; right: 12px;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--ink-light);
+      padding: 4px 6px;
+      border-radius: 3px;
+      transition: color 0.15s;
+    }
+    .btn-close-login:hover { color: var(--red); }
+    .btn-login-guest {
+      font-family: 'Caveat', cursive;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border: 2px solid var(--border);
+      background: var(--cream);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border-radius: 3px 5px 4px 3px;
+      color: var(--ink);
+      transition: transform 0.15s;
+      margin-left: auto;
+    }
+    .btn-login-guest:hover { transform: rotate(-1deg); }
 
     /* ログイン画面のキャラ */
     .login-char-area {
@@ -1160,6 +1190,9 @@
       </div>
       <div class="level-badge">Lv.<span id="levelDisp">1</span></div>
     </div>
+    <div class="user-area-guest" id="userAreaGuest" style="display:none;">
+      <button class="btn-login-guest" onclick="showLoginScreen()">ログイン / 新規登録</button>
+    </div>
     <div class="user-area" id="userArea" style="display:none;">
       <span class="user-email" id="userEmail"></span>
       <button class="btn-logout" onclick="logoutUser()">ログアウト</button>
@@ -1177,6 +1210,7 @@
   <!-- ===== ログイン画面 ===== -->
   <div class="auth-fullscreen" id="loginScreen" style="display:none;">
     <div class="login-card">
+      <button class="btn-close-login" onclick="hideLoginScreen()" title="後で">✕</button>
       <!-- カセツくん -->
       <div class="login-char-area">
         <div class="login-k-neck"></div>
@@ -2127,13 +2161,32 @@
           await onLogin();
         } catch (e) {
           console.error('onLogin error:', e);
-          document.getElementById('loadingScreen').style.display = 'none';
-          document.getElementById('loginScreen').style.display = 'flex';
+          startGuestMode();
         }
       } else {
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('loginScreen').style.display = 'flex';
+        startGuestMode();
       }
+    }
+
+    function startGuestMode() {
+      quests    = loadAllQuests();
+      globalXP  = parseInt(localStorage.getItem(XP_KEY) || '0');
+      globalLevel = Math.floor(globalXP / XP_PER_LEVEL) + 1;
+
+      document.getElementById('loadingScreen').style.display  = 'none';
+      document.getElementById('loginScreen').style.display    = 'none';
+      document.getElementById('userArea').style.display       = 'none';
+      document.getElementById('userAreaGuest').style.display  = 'flex';
+
+      init();
+    }
+
+    function showLoginScreen() {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    function hideLoginScreen() {
+      document.getElementById('loginScreen').style.display = 'none';
     }
 
     async function onLogin() {
@@ -2142,9 +2195,10 @@
       await loadQuestsFromSupabase();
       await loadXPFromSupabase();
 
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('userArea').style.display = 'flex';
+      document.getElementById('loadingScreen').style.display  = 'none';
+      document.getElementById('loginScreen').style.display    = 'none';
+      document.getElementById('userAreaGuest').style.display  = 'none';
+      document.getElementById('userArea').style.display       = 'flex';
 
       init();
     }
@@ -2155,9 +2209,8 @@
       globalLevel   = 1;
       activeQuestId = null;
 
-      document.getElementById('userArea').style.display    = 'none';
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('loginScreen').style.display  = 'flex';
+      document.getElementById('userArea').style.display = 'none';
+      startGuestMode();
     }
 
     /* ===================================================
